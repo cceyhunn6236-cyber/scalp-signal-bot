@@ -1,0 +1,30 @@
+name: Scalp Signal Bot
+
+on:
+  schedule:
+    # Hər 10 dəqiqədən bir (hər run 3 Twelve Data sorğusu edir - 5m data,
+    # canlı qiymət, EUR/USD DXY-proxy - kvotaya rahat sığması üçün)
+    - cron: "*/10 * * * *"
+  workflow_dispatch: {}
+
+jobs:
+  run-bot:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Repo-nu çək
+        uses: actions/checkout@v5
+
+      - name: Python qur
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+
+      - name: Kitabxanaları quraşdır
+        run: pip install -r requirements.txt
+
+      - name: Botu işə sal
+        env:
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          TWELVEDATA_API_KEY: ${{ secrets.TWELVEDATA_API_KEY }}
+        run: python scalp_signal_bot.py
